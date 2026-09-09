@@ -80,18 +80,20 @@ public class RequestService {
         return richiesta;
     }
 
+    @Transactional(readOnly = true)
     public RequestConCronologia dettaglio(User attore, Long requestId) {
         Request richiesta = getRichiestaOrThrow(requestId);
         assicuraVisibile(attore, richiesta);
-        List<RequestEvent> eventi = requestEventRepository.findByRequestIdOrderByCreatedAtAsc(requestId);
+        List<RequestEvent> eventi = requestEventRepository.findWithAutoreByRequestIdOrderByCreatedAtAsc(requestId);
         return new RequestConCronologia(richiesta, eventi);
     }
 
+    @Transactional(readOnly = true)
     public List<Request> lista(User attore, FiltroRichieste filtro) {
         List<Request> risultato = switch (attore.getRuolo()) {
-            case DIPENDENTE -> requestRepository.findByUserId(attore.getId());
-            case RESPONSABILE -> requestRepository.findByUserIdIn(idSottoposti(attore));
-            case ADMIN -> requestRepository.findAll();
+            case DIPENDENTE -> requestRepository.findWithUserByUserId(attore.getId());
+            case RESPONSABILE -> requestRepository.findWithUserByUserIdIn(idSottoposti(attore));
+            case ADMIN -> requestRepository.findAllWithUser();
         };
 
         return risultato.stream()
@@ -157,7 +159,7 @@ public class RequestService {
     }
 
     private Request getRichiestaOrThrow(Long id) {
-        return requestRepository.findById(id)
+        return requestRepository.findWithUserById(id)
                 .orElseThrow(() -> new RichiestaNonTrovataException(id));
     }
 }

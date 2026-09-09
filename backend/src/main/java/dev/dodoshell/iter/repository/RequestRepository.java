@@ -9,12 +9,25 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface RequestRepository extends JpaRepository<Request, Long> {
 
-    List<Request> findByUserId(Long userId);
+    // Con spring.jpa.open-in-view=false la sessione Hibernate si chiude alla fine
+    // della transazione del service: senza JOIN FETCH, richiesta.getUser().getNome()
+    // fallirebbe con LazyInitializationException quando il controller costruisce la
+    // risposta JSON.
+    @Query("SELECT r FROM Request r JOIN FETCH r.user WHERE r.id = :id")
+    Optional<Request> findWithUserById(@Param("id") Long id);
 
-    List<Request> findByUserIdIn(Collection<Long> userIds);
+    @Query("SELECT r FROM Request r JOIN FETCH r.user WHERE r.user.id = :userId ORDER BY r.createdAt DESC")
+    List<Request> findWithUserByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT r FROM Request r JOIN FETCH r.user WHERE r.user.id IN :userIds ORDER BY r.createdAt DESC")
+    List<Request> findWithUserByUserIdIn(@Param("userIds") Collection<Long> userIds);
+
+    @Query("SELECT r FROM Request r JOIN FETCH r.user ORDER BY r.createdAt DESC")
+    List<Request> findAllWithUser();
 
     @Query("""
             SELECT r FROM Request r

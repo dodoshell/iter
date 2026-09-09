@@ -110,7 +110,7 @@ class RequestServiceTest {
     @Test
     void ilProprietarioModificaUnaPropriaBozza() {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.BOZZA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
-        when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
+        when(requestRepository.findWithUserById(10L)).thenReturn(Optional.of(richiesta));
 
         Request risultato = service.modificaBozza(dipendente, 10L, TipoRichiesta.PERMESSO,
                 LocalDate.of(2026, 9, 21), LocalDate.of(2026, 9, 21), "aggiornata");
@@ -122,7 +122,7 @@ class RequestServiceTest {
     @Test
     void unUtenteDiversoDalProprietarioNonModificaLaBozza() {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.BOZZA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
-        when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
+        when(requestRepository.findWithUserById(10L)).thenReturn(Optional.of(richiesta));
 
         assertThatThrownBy(() -> service.modificaBozza(responsabile, 10L, TipoRichiesta.PERMESSO,
                 LocalDate.of(2026, 9, 21), LocalDate.of(2026, 9, 21), null))
@@ -132,7 +132,7 @@ class RequestServiceTest {
     @Test
     void nonSiPuoModificareUnaRichiestaGiaInviata() {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.INVIATA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
-        when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
+        when(requestRepository.findWithUserById(10L)).thenReturn(Optional.of(richiesta));
 
         assertThatThrownBy(() -> service.modificaBozza(dipendente, 10L, TipoRichiesta.PERMESSO,
                 LocalDate.of(2026, 9, 21), LocalDate.of(2026, 9, 21), null))
@@ -141,7 +141,7 @@ class RequestServiceTest {
 
     @Test
     void modificareUnaRichiestaInesistenteSegnalaNonTrovata() {
-        when(requestRepository.findById(99L)).thenReturn(Optional.empty());
+        when(requestRepository.findWithUserById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.modificaBozza(dipendente, 99L, TipoRichiesta.FERIE,
                 LocalDate.of(2026, 9, 21), LocalDate.of(2026, 9, 21), null))
@@ -153,7 +153,7 @@ class RequestServiceTest {
     @Test
     void ilProprietarioInviaLaPropriaRichiesta() {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.BOZZA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
-        when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
+        when(requestRepository.findWithUserById(10L)).thenReturn(Optional.of(richiesta));
         when(requestRepository.findSovrapposte(eq(1L), any(), any(), any())).thenReturn(List.of());
 
         Request risultato = service.applicaTransizione(dipendente, 10L, Azione.INVIA, null);
@@ -168,7 +168,7 @@ class RequestServiceTest {
     @Test
     void ilResponsabileDirettoPrendeInCaricoLaRichiesta() {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.INVIATA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
-        when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
+        when(requestRepository.findWithUserById(10L)).thenReturn(Optional.of(richiesta));
 
         Request risultato = service.applicaTransizione(responsabile, 10L, Azione.PRENDI_IN_CARICO, null);
 
@@ -178,7 +178,7 @@ class RequestServiceTest {
     @Test
     void unResponsabileNonDirettoNonPuoAgireSullaRichiesta() {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.INVIATA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
-        when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
+        when(requestRepository.findWithUserById(10L)).thenReturn(Optional.of(richiesta));
 
         assertThatThrownBy(() -> service.applicaTransizione(altroResponsabile, 10L, Azione.PRENDI_IN_CARICO, null))
                 .isInstanceOf(AccessoNonAutorizzatoException.class);
@@ -187,7 +187,7 @@ class RequestServiceTest {
     @Test
     void ilProprietarioNonPuoApprovareLaPropriaRichiesta() {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.IN_REVISIONE, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
-        when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
+        when(requestRepository.findWithUserById(10L)).thenReturn(Optional.of(richiesta));
 
         assertThatThrownBy(() -> service.applicaTransizione(dipendente, 10L, Azione.APPROVA, null))
                 .isInstanceOf(TransizioneNonConsentitaException.class);
@@ -197,7 +197,7 @@ class RequestServiceTest {
     void nonSiPuoInviareUnaRichiestaCheSiSovrappone() {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.BOZZA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
         Request giaApprovata = richiesta(11L, dipendente, StatoRichiesta.APPROVATA, LocalDate.of(2026, 9, 21), LocalDate.of(2026, 9, 25));
-        when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
+        when(requestRepository.findWithUserById(10L)).thenReturn(Optional.of(richiesta));
         when(requestRepository.findSovrapposte(eq(1L), any(), any(), any())).thenReturn(List.of(giaApprovata));
 
         assertThatThrownBy(() -> service.applicaTransizione(dipendente, 10L, Azione.INVIA, null))
@@ -212,7 +212,7 @@ class RequestServiceTest {
     @Test
     void ilProprietarioVedeIlDettaglioDellaPropriaRichiesta() {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.INVIATA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
-        when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
+        when(requestRepository.findWithUserById(10L)).thenReturn(Optional.of(richiesta));
 
         assertThat(service.dettaglio(dipendente, 10L).richiesta()).isSameAs(richiesta);
     }
@@ -220,7 +220,7 @@ class RequestServiceTest {
     @Test
     void ilManagerDirettoVedeIlDettaglio() {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.INVIATA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
-        when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
+        when(requestRepository.findWithUserById(10L)).thenReturn(Optional.of(richiesta));
 
         assertThat(service.dettaglio(responsabile, 10L).richiesta()).isSameAs(richiesta);
     }
@@ -228,7 +228,7 @@ class RequestServiceTest {
     @Test
     void lAdminVedeIlDettaglioDiQualsiasiRichiesta() {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.INVIATA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
-        when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
+        when(requestRepository.findWithUserById(10L)).thenReturn(Optional.of(richiesta));
 
         assertThat(service.dettaglio(admin, 10L).richiesta()).isSameAs(richiesta);
     }
@@ -236,7 +236,7 @@ class RequestServiceTest {
     @Test
     void unEstraneoNonVedeIlDettaglio() {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.INVIATA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
-        when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
+        when(requestRepository.findWithUserById(10L)).thenReturn(Optional.of(richiesta));
 
         assertThatThrownBy(() -> service.dettaglio(altroResponsabile, 10L))
                 .isInstanceOf(AccessoNonAutorizzatoException.class);
@@ -247,7 +247,7 @@ class RequestServiceTest {
     @Test
     void unDipendenteVedeSoloLeProprieRichieste() {
         List<Request> proprie = List.of(richiesta(1L, dipendente, StatoRichiesta.BOZZA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22)));
-        when(requestRepository.findByUserId(1L)).thenReturn(proprie);
+        when(requestRepository.findWithUserByUserId(1L)).thenReturn(proprie);
 
         List<Request> risultato = service.lista(dipendente, FiltroRichieste.vuoto());
 
@@ -258,7 +258,7 @@ class RequestServiceTest {
     void unResponsabileVedeLeRichiesteDeiPropriSottoposti() {
         when(userRepository.findByManagerId(2L)).thenReturn(List.of(dipendente));
         List<Request> deiSottoposti = List.of(richiesta(1L, dipendente, StatoRichiesta.IN_REVISIONE, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22)));
-        when(requestRepository.findByUserIdIn(List.of(1L))).thenReturn(deiSottoposti);
+        when(requestRepository.findWithUserByUserIdIn(List.of(1L))).thenReturn(deiSottoposti);
 
         List<Request> risultato = service.lista(responsabile, FiltroRichieste.vuoto());
 
@@ -269,7 +269,7 @@ class RequestServiceTest {
     void unAdminVedeTutteLeRichiesteEPuoFiltrarePerUtenteEStato() {
         Request r1 = richiesta(1L, dipendente, StatoRichiesta.APPROVATA, LocalDate.of(2026, 9, 1), LocalDate.of(2026, 9, 5));
         Request r2 = richiesta(2L, responsabile, StatoRichiesta.BOZZA, LocalDate.of(2026, 9, 10), LocalDate.of(2026, 9, 12));
-        when(requestRepository.findAll()).thenReturn(List.of(r1, r2));
+        when(requestRepository.findAllWithUser()).thenReturn(List.of(r1, r2));
 
         List<Request> soloApprovate = service.lista(admin, new FiltroRichieste(StatoRichiesta.APPROVATA, null, null, null));
         assertThat(soloApprovate).containsExactly(r1);
@@ -281,7 +281,7 @@ class RequestServiceTest {
     @Test
     void ilFiltroUtenteNonHaEffettoPerUnDipendente() {
         List<Request> proprie = List.of(richiesta(1L, dipendente, StatoRichiesta.BOZZA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22)));
-        when(requestRepository.findByUserId(1L)).thenReturn(proprie);
+        when(requestRepository.findWithUserByUserId(1L)).thenReturn(proprie);
 
         List<Request> risultato = service.lista(dipendente, new FiltroRichieste(null, 99L, null, null));
 
