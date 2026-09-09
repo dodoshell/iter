@@ -92,7 +92,11 @@ public class RequestService {
     public List<Request> lista(User attore, FiltroRichieste filtro) {
         List<Request> risultato = switch (attore.getRuolo()) {
             case DIPENDENTE -> requestRepository.findWithUserByUserId(attore.getId());
-            case RESPONSABILE -> requestRepository.findWithUserByUserIdIn(idSottoposti(attore));
+            // Le bozze dei sottoposti sono ancora private: il responsabile vede solo
+            // ciò che è stato davvero inviato (coda + storico delle decisioni).
+            case RESPONSABILE -> requestRepository.findWithUserByUserIdIn(idSottoposti(attore)).stream()
+                    .filter(r -> r.getStato() != StatoRichiesta.BOZZA)
+                    .toList();
             case ADMIN -> requestRepository.findAllWithUser();
         };
 
@@ -127,11 +131,17 @@ public class RequestService {
 
     private void assicuraVisibile(User attore, Request richiesta) {
         boolean proprietario = attore.getId().equals(richiesta.getUser().getId());
+        boolean admin = attore.getRuolo() == Ruolo.ADMIN;
+        if (proprietario || admin) {
+            return;
+        }
+
         User managerProprietario = richiesta.getUser().getManager();
         boolean managerDiretto = managerProprietario != null && managerProprietario.getId().equals(attore.getId());
-        boolean admin = attore.getRuolo() == Ruolo.ADMIN;
+        // Anche il manager diretto non può vedere una bozza non ancora inviata.
+        boolean visibileAlManager = managerDiretto && richiesta.getStato() != StatoRichiesta.BOZZA;
 
-        if (!proprietario && !managerDiretto && !admin) {
+        if (!visibileAlManager) {
             throw new AccessoNonAutorizzatoException("Non sei autorizzato a vedere questa richiesta");
         }
     }

@@ -242,6 +242,23 @@ class RequestServiceTest {
                 .isInstanceOf(AccessoNonAutorizzatoException.class);
     }
 
+    @Test
+    void ilManagerDirettoNonVedeUnaBozzaNonAncoraInviata() {
+        Request bozza = richiesta(10L, dipendente, StatoRichiesta.BOZZA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
+        when(requestRepository.findWithUserById(10L)).thenReturn(Optional.of(bozza));
+
+        assertThatThrownBy(() -> service.dettaglio(responsabile, 10L))
+                .isInstanceOf(AccessoNonAutorizzatoException.class);
+    }
+
+    @Test
+    void ilProprietarioVedeComunqueLaPropriaBozza() {
+        Request bozza = richiesta(10L, dipendente, StatoRichiesta.BOZZA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
+        when(requestRepository.findWithUserById(10L)).thenReturn(Optional.of(bozza));
+
+        assertThat(service.dettaglio(dipendente, 10L).richiesta()).isSameAs(bozza);
+    }
+
     // --- liste ---
 
     @Test
@@ -263,6 +280,18 @@ class RequestServiceTest {
         List<Request> risultato = service.lista(responsabile, FiltroRichieste.vuoto());
 
         assertThat(risultato).isEqualTo(deiSottoposti);
+    }
+
+    @Test
+    void unResponsabileNonVedeLeBozzeDeiPropriSottoposti() {
+        when(userRepository.findByManagerId(2L)).thenReturn(List.of(dipendente));
+        Request bozza = richiesta(1L, dipendente, StatoRichiesta.BOZZA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
+        Request inviata = richiesta(2L, dipendente, StatoRichiesta.INVIATA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
+        when(requestRepository.findWithUserByUserIdIn(List.of(1L))).thenReturn(List.of(bozza, inviata));
+
+        List<Request> risultato = service.lista(responsabile, FiltroRichieste.vuoto());
+
+        assertThat(risultato).containsExactly(inviata);
     }
 
     @Test
