@@ -1,8 +1,19 @@
+import { Route, Routes } from 'react-router'
+import { AuthProvider } from '@/features/auth/AuthProvider'
+import { LoginPage } from '@/features/auth/LoginPage'
+import { ProtectedRoute } from '@/features/auth/ProtectedRoute'
+import { DashboardPage } from '@/features/dashboard/DashboardPage'
+
 function App() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background text-foreground">
-      <p className="text-sm text-muted-foreground">Iter — setup in corso</p>
-    </main>
+    <AuthProvider>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<DashboardPage />} />
+        </Route>
+      </Routes>
+    </AuthProvider>
   )
 }
 
