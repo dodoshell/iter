@@ -214,7 +214,7 @@ class RequestServiceTest {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.INVIATA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
         when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
 
-        assertThat(service.dettaglio(dipendente, 10L)).isSameAs(richiesta);
+        assertThat(service.dettaglio(dipendente, 10L).richiesta()).isSameAs(richiesta);
     }
 
     @Test
@@ -222,7 +222,7 @@ class RequestServiceTest {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.INVIATA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
         when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
 
-        assertThat(service.dettaglio(responsabile, 10L)).isSameAs(richiesta);
+        assertThat(service.dettaglio(responsabile, 10L).richiesta()).isSameAs(richiesta);
     }
 
     @Test
@@ -230,7 +230,7 @@ class RequestServiceTest {
         Request richiesta = richiesta(10L, dipendente, StatoRichiesta.INVIATA, LocalDate.of(2026, 9, 20), LocalDate.of(2026, 9, 22));
         when(requestRepository.findById(10L)).thenReturn(Optional.of(richiesta));
 
-        assertThat(service.dettaglio(admin, 10L)).isSameAs(richiesta);
+        assertThat(service.dettaglio(admin, 10L).richiesta()).isSameAs(richiesta);
     }
 
     @Test

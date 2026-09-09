@@ -80,16 +80,11 @@ public class RequestService {
         return richiesta;
     }
 
-    public Request dettaglio(User attore, Long requestId) {
+    public RequestConCronologia dettaglio(User attore, Long requestId) {
         Request richiesta = getRichiestaOrThrow(requestId);
         assicuraVisibile(attore, richiesta);
-        return richiesta;
-    }
-
-    public List<RequestEvent> cronologia(User attore, Long requestId) {
-        Request richiesta = getRichiestaOrThrow(requestId);
-        assicuraVisibile(attore, richiesta);
-        return requestEventRepository.findByRequestIdOrderByCreatedAtAsc(requestId);
+        List<RequestEvent> eventi = requestEventRepository.findByRequestIdOrderByCreatedAtAsc(requestId);
+        return new RequestConCronologia(richiesta, eventi);
     }
 
     public List<Request> lista(User attore, FiltroRichieste filtro) {
