@@ -4,6 +4,8 @@ export type TipoRichiesta = 'FERIE' | 'PERMESSO' | 'MALATTIA'
 
 export type StatoRichiesta = 'BOZZA' | 'INVIATA' | 'IN_REVISIONE' | 'APPROVATA' | 'RESPINTA' | 'RITIRATA'
 
+export type Azione = 'INVIA' | 'RITIRA' | 'PRENDI_IN_CARICO' | 'APPROVA' | 'RESPINGI'
+
 export interface Me {
   id: number
   email: string
