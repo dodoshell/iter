@@ -4,6 +4,8 @@
 
 Gestionale di richieste di ferie e permessi con workflow di approvazione a tre ruoli (dipendente, responsabile, admin). Ogni richiesta segue una macchina a stati validata lato server, e ogni cambio di stato resta scritto in un registro eventi immutabile.
 
+**[Demo live](https://iter-dodoshell.vercel.app)** — utenti demo più sotto.
+
 ![Vista admin](docs/screenshots/admin-lista.jpg)
 
 ## Indice
@@ -58,14 +60,11 @@ Password per tutti: **`Password123!`**
 
 ## Deploy
 
-Il progetto è online:
+- **Frontend:** https://iter-dodoshell.vercel.app — su [Vercel](https://vercel.com), root directory `frontend/`, deploy automatico a ogni push su `main`. Variabile d'ambiente `VITE_API_BASE_URL` puntata all'URL pubblico del backend.
+- **Backend:** https://backend-production-12f4.up.railway.app/api — su [Railway](https://railway.app), root directory `backend/`, deploy automatico a ogni push su `main`.
+- **Database:** Postgres 16, servizio separato nello stesso progetto Railway del backend.
 
-- Frontend: https://iter-dodoshell.vercel.app
-- Backend: https://backend-production-12f4.up.railway.app/api
-
-**Frontend su [Vercel](https://vercel.com):** repo collegato con root directory `frontend/`, deploy automatico a ogni push su `main`. Variabile d'ambiente `VITE_API_BASE_URL` puntata all'URL pubblico del backend.
-
-**Backend + database su [Railway](https://railway.app):** un servizio per il backend (root directory `backend/`, deploy automatico da GitHub) e uno per Postgres 16, con queste variabili d'ambiente sul servizio backend:
+Variabili d'ambiente del servizio backend:
 
 ```
 DB_HOST=<host interno del database>
