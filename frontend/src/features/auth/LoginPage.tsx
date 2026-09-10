@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router'
+import { Button } from '@/components/ui/button'
 import { ApiError } from '@/lib/api'
 import { useAuth } from './auth-context'
 
@@ -77,15 +78,15 @@ export function LoginPage() {
           />
         </div>
 
-        {errore && <p className="text-sm text-destructive">{errore}</p>}
+        {errore && (
+          <p role="alert" className="text-sm text-destructive">
+            {errore}
+          </p>
+        )}
 
-        <button
-          type="submit"
-          disabled={inCorso}
-          className="w-full rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
-        >
-          {inCorso ? 'Accesso in corso…' : 'Accedi'}
-        </button>
+        <Button type="submit" isLoading={inCorso} className="w-full">
+          Accedi
+        </Button>
       </form>
     </main>
   )

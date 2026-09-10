@@ -1,4 +1,5 @@
-import type { StatoRichiesta, TipoRichiesta } from '@/lib/types'
+import type { Azione, StatoRichiesta, TipoRichiesta } from '@/lib/types'
+import type { BadgeVariant } from '@/components/ui/badge'
 
 export const ETICHETTE_STATO: Record<StatoRichiesta, string> = {
   BOZZA: 'Bozza',
@@ -9,17 +10,25 @@ export const ETICHETTE_STATO: Record<StatoRichiesta, string> = {
   RITIRATA: 'Ritirata',
 }
 
-export const VARIANTE_BADGE_STATO: Record<StatoRichiesta, 'default' | 'outline' | 'success' | 'warning' | 'destructive'> = {
+export const VARIANTE_BADGE_STATO: Record<StatoRichiesta, BadgeVariant> = {
   BOZZA: 'outline',
-  INVIATA: 'default',
+  INVIATA: 'info',
   IN_REVISIONE: 'warning',
   APPROVATA: 'success',
   RESPINTA: 'destructive',
-  RITIRATA: 'outline',
+  RITIRATA: 'muted',
 }
 
 export const ETICHETTE_TIPO: Record<TipoRichiesta, string> = {
   FERIE: 'Ferie',
   PERMESSO: 'Permesso',
   MALATTIA: 'Malattia',
+}
+
+export const MESSAGGIO_SUCCESSO_AZIONE: Record<Azione, string> = {
+  INVIA: 'Richiesta inviata',
+  RITIRA: 'Richiesta ritirata',
+  PRENDI_IN_CARICO: 'Richiesta presa in carico',
+  APPROVA: 'Richiesta approvata',
+  RESPINGI: 'Richiesta respinta',
 }
