@@ -33,11 +33,18 @@ export function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background p-4">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background p-4">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-96 bg-[radial-gradient(ellipse_at_top,_var(--color-accent),_transparent_70%)]"
+      />
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4 rounded-lg border border-border bg-card p-6 shadow-sm">
-        <div>
-          <h1 className="text-lg font-semibold text-foreground">Iter</h1>
-          <p className="text-sm text-muted-foreground">Accedi con le tue credenziali</p>
+        <div className="flex flex-col items-center gap-2 pb-1 text-center">
+          <img src="/favicon.svg" alt="" className="h-10 w-10" />
+          <div>
+            <h1 className="text-lg font-semibold text-foreground">Iter</h1>
+            <p className="text-sm text-muted-foreground">Accedi con le tue credenziali</p>
+          </div>
         </div>
 
         <div className="space-y-1">
