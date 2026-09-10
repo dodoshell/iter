@@ -58,19 +58,23 @@ Password per tutti: **`Password123!`**
 
 ## Deploy
 
-Il progetto non è (ancora) online. Per pubblicarlo:
+Il progetto è online:
 
-**Frontend su [Vercel](https://vercel.com):** importa il repo, root directory `frontend/`, build command `npm run build`, output `dist/`. Imposta la variabile d'ambiente `VITE_API_BASE_URL` con l'URL pubblico del backend (es. `https://iter-backend.onrender.com/api`).
+- Frontend: https://iter-dodoshell.vercel.app
+- Backend: https://backend-production-12f4.up.railway.app/api
 
-**Backend + database su un PaaS gratuito** (es. [Render](https://render.com), [Railway](https://railway.app) o [Fly.io](https://fly.io)): il `backend/Dockerfile` è già pronto per il build a container. Serve un database Postgres gestito dallo stesso provider (o [Supabase](https://supabase.com)) e queste variabili d'ambiente sul servizio backend:
+**Frontend su [Vercel](https://vercel.com):** repo collegato con root directory `frontend/`, deploy automatico a ogni push su `main`. Variabile d'ambiente `VITE_API_BASE_URL` puntata all'URL pubblico del backend.
+
+**Backend + database su [Railway](https://railway.app):** un servizio per il backend (root directory `backend/`, deploy automatico da GitHub) e uno per Postgres 16, con queste variabili d'ambiente sul servizio backend:
 
 ```
-DB_HOST=<host del database>
+DB_HOST=<host interno del database>
 DB_PORT=<porta, di solito 5432>
 DB_NAME=<nome database>
 DB_USER=<utente>
 DB_PASSWORD=<password>
 JWT_SECRET=<stringa lunga e casuale, almeno 32 caratteri>
+CORS_ALLOWED_ORIGINS=<origini del frontend separate da virgola>
 ```
 
 Flyway applica schema e seed al primo avvio, senza altri passaggi manuali.
